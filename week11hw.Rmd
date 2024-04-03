@@ -1,0 +1,107 @@
+---
+title: "week11hw"
+author: "Weizi Wu"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r}
+data()
+AirPassengers 
+```
+## Tables in LaTeX
+```{=latex}
+\begin{center}
+
+      This is a center environment.
+
+\end{center}
+```
+
+```{=tex}
+\begin{tabular}{l | c c}
+      \hline
+      Year & Jan & July \\
+      \hline \hline
+      1950 & 115 & 170 \\
+      1955 & 242 & 364 \\
+      1960 & 417 & 622 \\
+      \hline
+\end{tabular}
+```
+
+## Tables in Markdown
+
+| Year | Jan | Jul |
+|-------------|-----------|-----------|
+| 1960   | 417         | 622        |
+
+## Tables in HTML
+```{=html}
+<table>
+      <thead>
+            <tr>
+                  <td>Year</td> <td>Jan</td> <td>Jul</td>
+            </tr>
+      </thead>
+      <tbody>
+            <tr>
+                  <td>1950</td> <td>115</td> <td>170</td>
+            </tr>
+            <tr>
+                  <td>1955</td> <td>242</td> <td>364</td>
+            </tr>
+            <tr>
+                  <td>1960</td> <td>417</td> <td>622</td>
+            </tr>
+      </tbody>
+</table>
+```
+## Kable
+```{r}
+library(knitr)
+kable_ex <- data.frame( Year = c("1950", "1955", "1960"), 
+                        Jan = c("115", "242", "417"), 
+                        Jul = c("170", "364", "622"))
+kable(kable_ex, caption = "Kable Table")
+```
+## texreg
+```{r}
+# Estimate nested regression models
+M1 <- lm(mpg ~ cyl + disp + wt, data = mtcars)
+M2 <- lm(mpg ~ cyl + disp + wt + hp, data = mtcars)
+M3 <- lm(mpg ~ cyl + disp + wt + hp + am, data = mtcars)
+```
+
+```{r, results='asis', echo=FALSE}
+library(texreg)
+# Create custom coefficient names
+cust_coef <- c('(Intercept)', 'Number_of_cylinders', 'Displacement',
+'Weight', 'Gross_horsepower', 'Transmission')
+# Create nested regression model table
+texreg(list(M1, M2, M3),
+caption = 'Linear Regression models \\emph{texreg}',
+caption.above = TRUE,
+label = 'Basic_texregTable',
+custom.coef.names = cust_coef)
+```
+
+## stargazer
+```{r, results='asis'}
+library(stargazer)
+# Create example lm model
+model <- lm(mpg ~ cyl + hp + wt, data = mtcars)
+# Print table using stargazer
+stargazer::stargazer(model, type = "text",title = "Linear Regression Model", covariate.labels = c("cylinders","horsepower", "Weight"))
+```
+
+## xtable
+```{r, results='asis'}
+library(xtable)
+table1 = xtable::xtable(M1,
+caption = "Linear Regression",
+label = "BasicXtableSummary",
+digits = 1)
+print.xtable(table1)
+```
+
